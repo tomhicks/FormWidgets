@@ -18,14 +18,6 @@ define({
             }
         },
         {
-            id: 'date',
-            type: 'date',
-            caption: 'Date of birth',
-            bindings: {
-                value: 'dateOfBirth'
-            }
-        },
-        {
             id: 'text2',
             type: 'text',
             caption: 'Last name',
@@ -36,8 +28,6 @@ define({
         {
             id: 'repeater',
             type: 'repeater',
-            allowAdd: true,
-            allowDelete: true,
             bindings: {
                 value: 'addresses'
             },
@@ -47,7 +37,7 @@ define({
                     type: 'text',
                     caption: 'Line 1',
                     bindings: {
-                        line1: 'value'
+                        value: 'line1'
                     }
                 },
                 {
@@ -55,8 +45,26 @@ define({
                     type: 'text',
                     caption: 'Line 2',
                     bindings: {
-                        line2: 'value'
+                        value: 'line2',
+                        caption: 'line1'
                     }
+                },
+                {
+                    id: 'phoneRepeater',
+                    type: 'repeater',
+                    bindings: {
+                        value: 'phones'
+                    },
+                    children: [
+                        {
+                            id: 'phone',
+                            type: 'text',
+                            caption: 'Phone',
+                            bindings: {
+                                value: 'number'
+                            }
+                        },
+                    ]
                 }
             ]
         }

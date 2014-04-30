@@ -5,7 +5,8 @@ require.config({
         backbone: 'bower_components/backbone-amd/backbone',
         marionette: 'bower_components/backbone.marionette/lib/core/amd/backbone.marionette',
         'backbone.wreqr': 'bower_components/backbone.wreqr/lib/backbone.wreqr',
-        'backbone.babysitter': 'bower_components/backbone.babysitter/lib/backbone.babysitter'
+        'backbone.babysitter': 'bower_components/backbone.babysitter/lib/backbone.babysitter',
+        text: 'bower_components/requirejs-text/text'
     }
 });
 
@@ -14,8 +15,29 @@ require.config({
 // keep the require statement below small, and lets us do our bootstrapping
 // in a way similar to normal module loading: define(function(require){});
 define('app-bootstrap', function (require) {
-    console.log(require('app/data/person'));
+
+    'use strict';
+
+    var FormView = require('app/widgets/form');
+    var $ = require('jquery');
+    var Backbone = require('backbone');
+    var Node = require('app/node');
+
+    var formView = new FormView({
+        model: new Node(require('app/data/simple-form'), {
+            parse: true
+        }),
+        entity: new Backbone.Model(require('app/data/person'))
+    });
+
+    $('#app').append(formView.render().el);
+
 });
 
-// defer to named module above
-require(['app-bootstrap'], function () {});
+require(['jquery'], function ($) {
+    'use strict'; 
+
+    $(function () {
+        require(['app-bootstrap'], function () {});
+    });
+});

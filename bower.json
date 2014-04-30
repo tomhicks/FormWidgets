@@ -21,6 +21,7 @@
     "backbone-amd": "~1.1.0",
     "backbone.marionette": "~1.8.3",
     "jquery": "~2.1.0",
-    "underscore": "~1.6.0"
+    "underscore": "~1.6.0",
+    "requirejs-text": "~2.0.12"
   }
 }
