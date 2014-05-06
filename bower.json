@@ -25,6 +25,7 @@
     "requirejs-text": "~2.0.12",
     "backbone.stickit": "~0.8.0",
     "cocktail": "~0.5.7",
-    "backbone-nested-model": "~2.0.0"
+    "backbone-nested-model": "~2.0.0",
+    "bootstrap": "~3.1.1"
   }
 }
