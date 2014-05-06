@@ -4,31 +4,45 @@ define(function(require) {
     var _ = require('underscore');
     var template = require('text!./form.html');
     var Marionette = require('marionette');
+    var Cocktail = require('cocktail');
 
-    var widgetMap = {
-        button: require('./button'),
-        date: require('./date'),
-        repeater: require('./repeater'),
-        text: require('./text')
-    };
+    require('backbone.stickit');
 
-    return Marionette.CompositeView.extend({
+    var mixins = [
+        require('./behaviors/create-view-model'),
+        require('./behaviors/bind-entity-and-view-model')
+    ];
+
+    var FormWidget = Marionette.CompositeView.extend({
         tagName: 'form',
+
         template: _.template(template),
         attributes: {
-            'data-widget-type': 'form'
+            'data-widget-type': 'form',
+            class: 'well'
         },
 
         itemViewContainer: '.form-contents',
 
         storedOptions: [
             'entity',
-            'model'
+            'model',
+            'bindingBasePath'
         ],
+
+        bindings: {
+            '> .widget-caption': 'caption'
+        },
+
+        bindingBasePath: '',
 
         initialize: function (options) {
             _.extend(this, _.pick(options, this.storedOptions));
-            this.collection = this.model.get('children');
+            this.collection = this.model.get('children');            
+        },
+
+        onRender: function () {
+            this.stickit(this.viewModel);
         },
 
         buildItemView: function(formNode, ItemViewType, itemViewOptions) {
@@ -41,13 +55,28 @@ define(function(require) {
 
             options = _.extend({
                 model: formNode,
-                entity: this.entity
-
+                entity: this.entity,
+                bindingBasePath: this.bindingBasePath,
             }, itemViewOptions);
 
-            return new WidgetType(options);
+            if (WidgetType === widgetMap.repeater) {
+                options.widgetMap = widgetMap;
+            }
 
+            return new WidgetType(options);
         }
 
     });
+
+    var widgetMap = {
+        button: require('./button'),
+        date: require('./date'),
+        repeater: require('./repeater'),
+        text: require('./text'),
+        form: FormWidget
+    };
+
+    Cocktail.mixin(FormWidget, mixins);
+    return FormWidget;
+
 });

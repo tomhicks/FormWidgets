@@ -16,10 +16,12 @@ define(function(require) {
 
         initialize: function (options) {
             this.entity = options.entity;
+            this.bindingBasePath = options.bindingBasePath;
+            this.widgetMap = options.widgetMap;
         },
 
         buildItemView: function(formNode) {
-            var WidgetType = widgetMap[formNode.get('type')];
+            var WidgetType = this.widgetMap[formNode.get('type')];
             var options;
 
             if (!WidgetType) {
@@ -28,8 +30,13 @@ define(function(require) {
 
             options = {
                 model: formNode,
-                entity: this.entity
+                entity: this.entity,
+                bindingBasePath: this.bindingBasePath
             };
+
+            if (WidgetType === this.widgetMap.repeater) {
+                options.widgetMap = this.widgetMap;
+            }
 
             return new WidgetType(options);
         }
@@ -52,18 +59,36 @@ define(function(require) {
 
         storedOptions: [
             'entity',
-            'model'
+            'model',
+            'bindingBasePath',
+            'widgetMap'
         ],
 
         initialize: function (options) {
             _.extend(this, _.pick(options, this.storedOptions));
-            this.collection = new Backbone.Collection(this.entity.get(this.model.get('bindings').value));
+            this.collection = new Backbone.Collection(this.entity.get(this.bindingBasePath + (this.bindingBasePath ? '.' : '') + this.model.get('bindings').value));
+
+            if (!this.entity.get(this.bindingBasePath + (this.bindingBasePath ? '.' : '') + this.model.get('bindings').value)) {
+                this.entity.set(this.bindingBasePath + (this.bindingBasePath ? '.' : '') + this.model.get('bindings').value, []);
+            }
+
+            this.listenTo(this.collection, 'add', function () {
+                this.entity.add(this.bindingBasePath + (this.bindingBasePath ? '.' : '') + this.model.get('bindings').value, {});
+            }, this);
         },
 
         buildItemView: function(item) {
+            this.stopListening(item);
+            this.listenTo(item, 'change', function (model) {
+                var index = this.collection.indexOf(model);
+                _.extend(this.entity.get(this.model.get('bindings').value)[index], model.changed);
+            }, this);
+
             return new RepeaterItem({
                 collection: this.model.get('children'),
-                entity: item
+                entity: this.entity,
+                bindingBasePath: this.bindingBasePath + (this.bindingBasePath ? '.' : '') + this.model.get('bindings').value + '[' + item.collection.indexOf(item) + ']',
+                widgetMap: this.widgetMap
             });
         },
 
@@ -74,13 +99,6 @@ define(function(require) {
             this.collection.add({});
         }
     });
-
-    var widgetMap = {
-        button: require('./button'),
-        date: require('./date'),
-        text: require('./text'),
-        repeater: Repeater
-    };
 
     return Repeater;
 

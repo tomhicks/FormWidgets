@@ -3,11 +3,18 @@ define(function(require) {
     'use strict';
 
     var _ = require('underscore');
-    var Backbone = require('backbone');
     var Marionette = require('marionette');
     var template = require('text!./text.html');
+    var Cocktail = require('cocktail');
 
-    return Marionette.ItemView.extend({
+    require('backbone.stickit');
+
+    var mixins = [
+        require('./behaviors/create-view-model'),
+        require('./behaviors/bind-entity-and-view-model')
+    ];
+
+    var TextWidget = Marionette.ItemView.extend({
         
         template: _.template(template),
 
@@ -18,20 +25,25 @@ define(function(require) {
 
         storedOptions: [
             'entity',
-            'model'
+            'model',
+            'bindingBasePath'
         ],
+
+        events: {
+            'input input': 'onChange'
+        },
+
+        bindings: {
+                input: 'value',
+                '> .widget-caption': 'caption'
+        },
 
         initialize: function (options) {
             _.extend(this, _.pick(options, this.storedOptions));
+        },
 
-            var bindings = this.model.get('bindings');
-            var boundKeys = _.keys(bindings);
-            var boundData = _.reduce(boundKeys, function (memo, key) {
-                memo[key] = this.entity.get(bindings[key]);
-                return memo;
-            }.bind(this), {});
-
-            this.viewModel = new Backbone.Model(_.extend({}, this.model.toJSON(), boundData));
+        onRender: function () {
+            this.stickit(this.viewModel);
         },
 
         serializeData: function () {
@@ -39,5 +51,8 @@ define(function(require) {
         }
 
     });
+
+    Cocktail.mixin(TextWidget, mixins);
+    return TextWidget;
 
 });

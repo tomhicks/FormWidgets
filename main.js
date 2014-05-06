@@ -6,7 +6,20 @@ require.config({
         marionette: 'bower_components/backbone.marionette/lib/core/amd/backbone.marionette',
         'backbone.wreqr': 'bower_components/backbone.wreqr/lib/backbone.wreqr',
         'backbone.babysitter': 'bower_components/backbone.babysitter/lib/backbone.babysitter',
-        text: 'bower_components/requirejs-text/text'
+        text: 'bower_components/requirejs-text/text',
+        'backbone.stickit': 'bower_components/backbone.stickit/backbone.stickit',
+        cocktail: 'bower_components/cocktail/Cocktail',
+        'nested-model': 'bower_components/backbone-nested-model/backbone-nested'
+    },
+    shim: {
+        'nested-model': {
+            deps: ['backbone'],
+            init: function (Backbone) {
+                'use strict';
+
+                return Backbone.NestedModel;
+            }
+        }
     }
 });
 
@@ -20,17 +33,25 @@ define('app-bootstrap', function (require) {
 
     var FormView = require('app/widgets/form');
     var $ = require('jquery');
-    var Backbone = require('backbone');
     var Node = require('app/node');
+    var NestedModel = require('nested-model');
+
+    var formDefinition = new Node(require('app/data/simple-form'), {
+        parse: true
+    });
+
+    var person = new NestedModel(require('app/data/person'));
 
     var formView = new FormView({
-        model: new Node(require('app/data/simple-form'), {
-            parse: true
-        }),
-        entity: new Backbone.Model(require('app/data/person'))
+        model: formDefinition,
+        entity: person
     });
 
     $('#app').append(formView.render().el);
+
+    person.on('change', function () {
+        $('#log').html(JSON.stringify(person.toJSON(), null, '  '));
+    });
 
 });
 
