@@ -4,19 +4,20 @@ define({
     caption: 'Sample Form',
     children: [
         {
-            id: 'subform',
-            type: 'form',
-            caption: 'nother form',
-            children: [
-                {
-                    id: 'faveColor',
-                    type: 'text',
-                    caption: 'favourite color',
-                    bindings: {
-                        value: 'favorites.color'
-                    }
-                }
-            ]
+            id: 'text',
+            type: 'text',
+            bindings: {
+                value: 'firstName',
+                caption: 'firstName'
+            }
+        },
+        {
+            id: 'text2',
+            type: 'text',
+            caption: 'Last name',
+            bindings: {
+                value: 'lastName'
+            }
         },
         {
             id: 'repeater',
@@ -26,29 +27,6 @@ define({
             },
             children: [
                 {
-                    id: 'subform',
-                    type: 'form',
-                    caption: 'subform in repeater',
-                    children: [
-                        {
-                            id: 'x',
-                            type: 'text',
-                            caption: 'x',
-                            bindings: {
-                                value: 'location.twoDee.x'
-                            }
-                        },
-                        {
-                            id: 'y',
-                            type: 'text',
-                            caption: 'y',
-                            bindings: {
-                                value: 'location.twoDee.y'
-                            }
-                        },
-                    ]
-                },
-                {
                     id: 'line1',
                     type: 'text',
                     caption: 'Line 1',
@@ -57,19 +35,10 @@ define({
                     }
                 },
                 {
-                    id: 'button2',
+                    id: 'somebutton',
                     type: 'button',
-                    caption: 'Line 1',
                     bindings: {
                         caption: 'line1'
-                    }
-                },
-                {
-                    id: 'line1copy',
-                    type: 'text',
-                    caption: 'Line 1 Copy',
-                    bindings: {
-                        value: 'line1'
                     }
                 },
                 {
@@ -95,51 +64,10 @@ define({
                             bindings: {
                                 value: 'number'
                             }
-                        },
-                        {
-                            id: 'phoneTypeName',
-                            type: 'text',
-                            caption: 'network name',
-                            bindings: {
-                                value: 'network.name'
-                            }
-                        },
-                        {
-                            id: 'phoneTypeName2',
-                            type: 'text',
-                            caption: 'network name',
-                            bindings: {
-                                value: 'network.name'
-                            }
                         }
                     ]
                 }
             ]
-        },
-        {
-            id: 'button',
-            type: 'button',
-            caption: 'Click me',
-            bindings: {
-                caption: 'lastName'
-            }
-        },
-        {
-            id: 'text',
-            type: 'text',
-            caption: 'Text label',
-            bindings: {
-                value: 'firstName',
-                caption: 'firstName'
-            }
-        },
-        {
-            id: 'text2',
-            type: 'text',
-            caption: 'Last name',
-            bindings: {
-                value: 'lastName'
-            }
         }
     ]
 });

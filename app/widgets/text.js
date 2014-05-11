@@ -10,12 +10,11 @@ define(function(require) {
     require('backbone.stickit');
 
     var mixins = [
-        require('./behaviors/create-view-model'),
-        require('./behaviors/bind-entity-and-view-model')
+        require('./behaviors/create-view-model')
     ];
 
     var TextWidget = Marionette.ItemView.extend({
-        
+
         template: _.template(template),
 
         attributes: {
@@ -28,10 +27,6 @@ define(function(require) {
             'model',
             'bindingBasePath'
         ],
-
-        events: {
-            'input input': 'onChange'
-        },
 
         bindings: {
                 input: 'value',
@@ -49,7 +44,6 @@ define(function(require) {
         serializeData: function () {
             return this.viewModel.toJSON();
         }
-
     });
 
     Cocktail.mixin(TextWidget, mixins);

@@ -34,6 +34,7 @@ define('app-bootstrap', function (require) {
     var FormView = require('app/widgets/form');
     var $ = require('jquery');
     var Node = require('app/node');
+    var Backbone = require('backbone');
     var NestedModel = require('nested-model');
 
     var formDefinition = new Node(require('app/data/simple-form'), {
@@ -52,6 +53,8 @@ define('app-bootstrap', function (require) {
     person.on('change', function () {
         $('#log').html(JSON.stringify(person.toJSON(), null, '  '));
     });
+
+    Backbone.history.start();
 
 });
 

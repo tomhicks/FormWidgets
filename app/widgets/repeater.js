@@ -7,12 +7,20 @@ define(function(require) {
     var Marionette = require('marionette');
     var template = require('text!./repeater.html');
 
-    var RepeaterItem = Marionette.CollectionView.extend({
+    var RepeaterItem = Marionette.CompositeView.extend(_.extend({
 
         tagName: 'div',
-        className: 'repeater-item',
+
+        template: _.template(require('text!./repeater-item.html')),
+        itemViewContainer: '.repeater-item-contents',
 
         itemView: Backbone.View,
+
+        widgetMap: {},
+
+        events: {
+            'click .remove-item': 'onRemoveItemClick'
+        },
 
         initialize: function (options) {
             this.entity = options.entity;
@@ -20,32 +28,28 @@ define(function(require) {
             this.widgetMap = options.widgetMap;
         },
 
-        buildItemView: function(formNode) {
-            var WidgetType = this.widgetMap[formNode.get('type')];
-            var options;
+        setBindingBasePath: function (bindingBasePath) {
+            this.bindingBasePath = bindingBasePath;
 
-            if (!WidgetType) {
-                throw new Error('Widget type "' + formNode.get('type') + '" does not exist');
-            }
+            this.children.each(function (child) {
+                child.setBindingBasePath(this.bindingBasePath);
+            }, this);
 
-            options = {
-                model: formNode,
-                entity: this.entity,
-                bindingBasePath: this.bindingBasePath
-            };
+            return this;
+        },
 
-            if (WidgetType === this.widgetMap.repeater) {
-                options.widgetMap = this.widgetMap;
-            }
+        onRemoveItemClick: function (event) {
+            event.preventDefault();
+            event.stopPropagation();
 
-            return new WidgetType(options);
+            this.model.destroy();
         }
-    });
+    }, require('./behaviors/build-bound-item-view')));
 
-    var Repeater = Marionette.CompositeView.extend({
-        
+    var Repeater = Marionette.CompositeView.extend(_.extend({
+
         events: {
-            'click button': 'addItem'
+            'click .add-item': 'addItem'
         },
 
         template: _.template(template),
@@ -66,15 +70,36 @@ define(function(require) {
 
         initialize: function (options) {
             _.extend(this, _.pick(options, this.storedOptions));
-            this.collection = new Backbone.Collection(this.entity.get(this.bindingBasePath + (this.bindingBasePath ? '.' : '') + this.model.get('bindings').value));
-
-            if (!this.entity.get(this.bindingBasePath + (this.bindingBasePath ? '.' : '') + this.model.get('bindings').value)) {
-                this.entity.set(this.bindingBasePath + (this.bindingBasePath ? '.' : '') + this.model.get('bindings').value, []);
-            }
+            this.collection = new Backbone.Collection(this.entity.get(this.getBindingPathPrefix() + this.model.get('bindings').value));
 
             this.listenTo(this.collection, 'add', function () {
-                this.entity.add(this.bindingBasePath + (this.bindingBasePath ? '.' : '') + this.model.get('bindings').value, {});
+                // ensure an array in the entity
+                if (!this.entity.get(this.getBindingPathPrefix() + this.model.get('bindings').value)) {
+                    this.entity.set(this.getBindingPathPrefix() + this.model.get('bindings').value, [{}]);
+                } else {
+                    this.entity.add(this.getBindingPathPrefix() + this.model.get('bindings').value, {});
+                }
             }, this);
+
+            this.listenTo(this.collection, 'remove', function (model, collection, options) {
+                this.entity.remove(this.getBindingPathPrefix() + this.model.get('bindings').value + '[' + options.index + ']');
+                _.defer(this.updateChildViewBindingPaths.bind(this));
+            }, this);
+        },
+
+        setBindingBasePath: function (bindingBasePath) {
+            this.bindingBasePath = bindingBasePath;
+            this.updateChildViewBindingPaths();
+        },
+
+        updateChildViewBindingPaths: function () {
+            this.children.each(function (childView, index) {
+                childView.setBindingBasePath(this.getBindingBasePathForIndex(index));
+            }, this);
+        },
+
+        getBindingBasePathForIndex: function (index) {
+            return this.getBindingPathPrefix() + this.model.get('bindings').value + '[' + index + ']';
         },
 
         buildItemView: function(item) {
@@ -87,8 +112,9 @@ define(function(require) {
             return new RepeaterItem({
                 collection: this.model.get('children'),
                 entity: this.entity,
-                bindingBasePath: this.bindingBasePath + (this.bindingBasePath ? '.' : '') + this.model.get('bindings').value + '[' + item.collection.indexOf(item) + ']',
-                widgetMap: this.widgetMap
+                bindingBasePath: this.getBindingBasePathForIndex(item.collection.indexOf(item)),
+                widgetMap: this.widgetMap,
+                model: item
             });
         },
 
@@ -98,7 +124,7 @@ define(function(require) {
 
             this.collection.add({});
         }
-    });
+    }, require('./behaviors/get-binding-path-prefix')));
 
     return Repeater;
 
