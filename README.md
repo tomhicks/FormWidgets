@@ -5,6 +5,8 @@ property of a model.
 
 # Installation
 
+    npm install -g bower
+
 From the root directory:
 
     bower install
