@@ -71,7 +71,9 @@ define(function(require) {
         initialize: function (options) {
             _.extend(this, _.pick(options, this.storedOptions));
             this.collection = new Backbone.Collection(this.entity.get(this.getBindingPathPrefix() + this.model.get('bindings').value));
-
+            
+            // this all should be reversed so that the collection listens to changes on the entity.
+            // A bug in nested model currently prevents this: https://github.com/afeld/backbone-nested/pull/117
             this.listenTo(this.collection, 'add', function () {
                 // ensure an array in the entity
                 if (!this.entity.get(this.getBindingPathPrefix() + this.model.get('bindings').value)) {
