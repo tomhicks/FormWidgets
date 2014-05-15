@@ -1,59 +1,39 @@
-define({
-    title: 'Mr',
-    firstName: 'Tom',
-    lastName: 'Hicks',
-    dateOfBirth: '1985-12-09',
+define(function (require) {
+    'use strict';
 
-    favorites: {
-        color: 'red',
-        food: 'eggs'
-    },
+    var _ = require('underscore');
 
-    addresses: [
-        {
-            name: 'Home',
-            line1: '10 Mogg Street',
-            line2: 'St Werburghs',
-            phones: [
-                {
-                    number: '07980077015',
-                    network: {
-                        name: 'orange'
-                    }
-                }
-            ],
-            location: {
-                twoDee: {
-                    x: 789,
-                    y: 234
-                }
-            }
+    return {
+        title: 'Mr',
+        firstName: 'Tom',
+        lastName: 'Hicks',
+        dateOfBirth: '1985-12-09',
+
+        favorites: {
+            color: 'red',
+            food: 'eggs'
         },
-        {
-            name: 'Work',
-            line1: 'ADP',
-            line2: '1 Friary',
-            line3: 'Bristol',
-            phones: [
-                {
-                    number: '12345',
-                    network: {
-                        name: 'bt'
+
+        addresses: _.times(1000, function () {
+            return {
+                name: 'Home',
+                line1: '10 Mogg Street',
+                line2: 'St Werburghs',
+                phones: [
+                    {
+                        number: '07980077015',
+                        network: {
+                            name: 'orange'
+                        }
                     }
-                },
-                {
-                    number: '12345',
-                    network: {
-                        name: 'ee'
+                ],
+                location: {
+                    twoDee: {
+                        x: 789,
+                        y: 234
                     }
                 }
-            ],
-            location: {
-                twoDee: {
-                    x: 123,
-                    y: 456
-                }
-            }
-        }
-    ]
+            };
+        })
+    };
 });

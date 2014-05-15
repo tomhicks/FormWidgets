@@ -1,71 +1,56 @@
 define(function (require) {
     'use strict';
 
+
     var _ = require('underscore');
-    var template = require('text!./form.html');
-    var Marionette = require('marionette');
-    var Cocktail = require('cocktail');
+    var React = require('react');
+    var DOM = React.DOM;
 
-    require('backbone.stickit');
+    var FormWidget = React.createClass({
 
-    var mixins = [
-        require('./behaviors/create-view-model')
-    ];
-
-    var FormWidget = Marionette.CompositeView.extend(_.extend({
-        tagName: 'form',
-
-        template: _.template(template),
-        attributes: {
-            'data-widget-type': 'form'
+        getInitialState: function () {
+            return {
+                entity: this.props.entity
+            };
         },
 
-        itemViewContainer: '.form-contents',
+        getPropValue: function (prop) {
+            if (this.props.widgetDefinition.bindings) {
+                var keyIntoEntity = this.props.widgetDefinition.bindings[prop];
 
-        storedOptions: [
-            'entity',
-            'model',
-            'bindingBasePath'
-        ],
-
-        bindings: {
-            '> .widget-caption': 'caption'
+                if (keyIntoEntity) {
+                    return this.props.entity[keyIntoEntity];
+                } else {
+                    return this.props.widgetDefinition.caption;
+                }
+            } else {
+                return this.props.widgetDefinition.caption;
+            }
         },
 
-        widgetMap: {
-            button: require('./button'),
-            date: require('./date'),
-            repeater: require('./repeater'),
-            text: require('./text')
-        },
+        render: function () {
 
-        bindingBasePath: '',
+            var children = [
+                DOM.h2(null, this.getPropValue('caption'))
+            ];
 
-        initialize: function (options) {
-            _.extend(this, _.pick(options, this.storedOptions));
-            this.collection = this.model.get('children');
-
-            // add this constructor to the widgetMap
-            this.widgetMap.form = FormWidget;
-        },
-
-        onRender: function () {
-            this.stickit(this.viewModel);
-        },
-
-        setBindingBasePath: function (bindingBasePath) {
-            this.bindingBasePath = bindingBasePath;
-
-            this.children.each(function (child) {
-                child.setBindingBasePath(this.bindingBasePath);
+            _.each(this.props.widgetDefinition.children, function (widgetDefinition) {
+                children.push(this.props.widgetMap[widgetDefinition.type]({
+                    widgetDefinition: widgetDefinition,
+                    entity: this.state.entity,
+                    updateCallback: this.forceUpdate.bind(this),
+                    widgetMap: this.props.widgetMap
+                }));
             }, this);
 
-            return this;
-        },
+            return DOM.form({
+                'data-widget-type': 'form',
+                className: 'well',
+                children: children
+            });
+        }
+    });
 
-    }, require('./behaviors/build-bound-item-view')));
-
-    Cocktail.mixin(FormWidget, mixins);
     return FormWidget;
 
 });

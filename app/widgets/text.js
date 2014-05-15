@@ -1,52 +1,49 @@
 define(function(require) {
 
     'use strict';
+    var React = require('react');
 
-    var _ = require('underscore');
-    var Marionette = require('marionette');
-    var template = require('text!./text.html');
-    var Cocktail = require('cocktail');
+    var TextWidget = React.createClass({
 
-    require('backbone.stickit');
+        displayName: 'TextWidget',
 
-    var mixins = [
-        require('./behaviors/create-view-model')
-    ];
-
-    var TextWidget = Marionette.ItemView.extend({
-
-        template: _.template(template),
-
-        attributes: {
-            'data-widget-type': 'text',
-            'class': 'form-group'
+        render: function () {
+            return React.DOM.div
+            (
+                {
+                    className: 'form-group',
+                    'data-widget-type': 'text',
+                },
+                React.DOM.label(
+                    {
+                        className: 'widget-caption',
+                    },
+                    this.getPropValue('caption')
+                ),
+                React.DOM.input({
+                    className: 'form-control',
+                    onChange: this.onChange,
+                    value: this.getPropValue('value')
+                })
+            );
         },
 
-        storedOptions: [
-            'entity',
-            'model',
-            'bindingBasePath'
-        ],
+        getPropValue: function (prop) {
+            var keyIntoEntity = this.props.widgetDefinition.bindings[prop];
 
-        bindings: {
-                input: 'value',
-                '> .widget-caption': 'caption'
+            if (keyIntoEntity) {
+                return this.props.entity[keyIntoEntity];
+            } else {
+                return this.props.widgetDefinition.caption;
+            }
         },
 
-        initialize: function (options) {
-            _.extend(this, _.pick(options, this.storedOptions));
-        },
-
-        onRender: function () {
-            this.stickit(this.viewModel);
-        },
-
-        serializeData: function () {
-            return this.viewModel.toJSON();
+        onChange: function (e) {
+            this.props.entity[this.props.widgetDefinition.bindings.value] = e.target.value;
+            this.props.updateCallback();
         }
     });
 
-    Cocktail.mixin(TextWidget, mixins);
     return TextWidget;
 
 });

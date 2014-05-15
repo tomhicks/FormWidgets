@@ -18,14 +18,10 @@
   ],
   "dependencies": {
     "requirejs": "~2.1.11",
-    "backbone-amd": "~1.1.0",
-    "backbone.marionette": "~1.8.3",
     "jquery": "~2.1.0",
     "underscore": "~1.6.0",
     "requirejs-text": "~2.0.12",
-    "backbone.stickit": "~0.8.0",
-    "cocktail": "~0.5.7",
-    "backbone-nested-model": "~2.0.0",
-    "bootstrap": "~3.1.1"
+    "bootstrap": "~3.1.1",
+    "react": "~0.10.0"
   }
 }

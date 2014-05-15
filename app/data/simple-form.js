@@ -1,25 +1,11 @@
-define({
-    id: 'form',
-    type: 'form',
-    caption: 'Sample Form',
-    children: [
-        {
-            id: 'text',
-            type: 'text',
-            bindings: {
-                value: 'firstName',
-                caption: 'firstName'
-            }
-        },
-        {
-            id: 'text2',
-            type: 'text',
-            caption: 'Last name',
-            bindings: {
-                value: 'lastName'
-            }
-        },
-        {
+define(function (require) {
+
+    'use strict';
+
+    var _ = require('underscore');
+
+    var repeaters = _.times(1, function () {
+        return {
             id: 'repeater',
             type: 'repeater',
             bindings: {
@@ -35,32 +21,15 @@ define({
                     }
                 },
                 {
-                    id: 'somebutton',
-                    type: 'button',
-                    bindings: {
-                        caption: 'line1'
-                    }
-                },
-                {
-                    id: 'line2',
-                    type: 'text',
-                    caption: 'Line 2',
-                    bindings: {
-                        value: 'line2',
-                        caption: 'line1'
-                    }
-                },
-                {
-                    id: 'phoneRepeater',
+                    id: 'phones',
                     type: 'repeater',
                     bindings: {
                         value: 'phones'
                     },
                     children: [
                         {
-                            id: 'phone',
+                            id: 'networkName',
                             type: 'text',
-                            caption: 'Phone',
                             bindings: {
                                 value: 'number'
                             }
@@ -68,6 +37,39 @@ define({
                     ]
                 }
             ]
-        }
-    ]
+        };
+    });
+
+    return {
+        id: 'form',
+        type: 'form',
+        caption: 'Sample Form',
+        children: [
+            {
+                id: 'text',
+                type: 'text',
+                bindings: {
+                    value: 'firstName',
+                    caption: 'firstName'
+                }
+            },
+            {
+                id: 'text2',
+                type: 'text',
+                caption: 'Last name',
+                bindings: {
+                    value: 'lastName'
+                }
+            },
+            {
+                id: 'text3',
+                type: 'text',
+                caption: 'Last name',
+                bindings: {
+                    value: 'lastName',
+                    caption: 'lastName'
+                }
+            }
+        ].concat(repeaters)
+    };
 });
