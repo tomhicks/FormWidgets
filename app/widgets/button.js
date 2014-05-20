@@ -41,14 +41,6 @@ define(function(require) {
             _.extend(this, _.pick(options, this.storedOptions));
         },
 
-        onRender: function () {
-            this.stickit(this.viewModel);
-        },
-
-        serializeData: function () {
-            return this.viewModel.toJSON();
-        },
-
         onClick: function () {
             if (this.model.get('url')) {
                 Backbone.history.navigate(this.model.get('url'), true);

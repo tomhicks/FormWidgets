@@ -49,10 +49,6 @@ define(function (require) {
             this.widgetMap.form = FormWidget;
         },
 
-        onRender: function () {
-            this.stickit(this.viewModel);
-        },
-
         setBindingBasePath: function (bindingBasePath) {
             this.bindingBasePath = bindingBasePath;
 

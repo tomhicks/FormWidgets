@@ -35,14 +35,6 @@ define(function(require) {
 
         initialize: function (options) {
             _.extend(this, _.pick(options, this.storedOptions));
-        },
-
-        onRender: function () {
-            this.stickit(this.viewModel);
-        },
-
-        serializeData: function () {
-            return this.viewModel.toJSON();
         }
     });
 

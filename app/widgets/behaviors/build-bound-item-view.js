@@ -16,11 +16,8 @@ define(function (require) {
                 model: formNode,
                 entity: this.entity,
                 bindingBasePath: this.bindingBasePath,
+                widgetMap: this.widgetMap
             }, itemViewOptions);
-
-            if (WidgetType === this.widgetMap.repeater) {
-                options.widgetMap = this.widgetMap;
-            }
 
             return new WidgetType(options);
         }

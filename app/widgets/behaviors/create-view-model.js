@@ -9,6 +9,8 @@ define(function (require) {
             // construct the view model
             var entityBindings = this.model.get('bindings');
             var boundKeys = _.keys(entityBindings);
+
+            // assign entity values to the view model
             var boundData = _.reduce(boundKeys, function (memo, key) {
                 memo[key] = this.entity.get(this.getBindingPathPrefix() + entityBindings[key]);
                 return memo;
@@ -22,6 +24,8 @@ define(function (require) {
         setBindingBasePath: function (bindingBasePath) {
             this.bindingBasePath = bindingBasePath;
             this._bindViewModelAndEntity();
+            this.unstickit(this.viewModel);
+            this.stickit(this.viewModel);
         },
 
         _bindViewModelAndEntity: function () {
@@ -36,13 +40,19 @@ define(function (require) {
             }, this);
 
             this.stopListening(this.viewModel);
+
             // update the entity when the view model changes
             this.listenTo(this.viewModel, 'change:value', function (model, value) {
                 this.entity.set(this.getBindingPathPrefix() + entityBindings.value, value);
             });
+        },
 
-            this.unstickit(this.viewModel);
+        onRender: function () {
             this.stickit(this.viewModel);
+        },
+
+        serializeData: function () {
+            return this.viewModel.toJSON();
         }
 
     }, require('./get-binding-path-prefix'));
