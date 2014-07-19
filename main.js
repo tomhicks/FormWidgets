@@ -59,9 +59,9 @@ define('app-bootstrap', function (require) {
 });
 
 require(['jquery'], function ($) {
-    'use strict'; 
+    'use strict';
 
     $(function () {
-        require(['app-bootstrap'], function () {});
+        require(['app-bootstrap']);
     });
 });
